@@ -9,22 +9,22 @@ int main() {
     main_word = "Biggest";
     char letter;
     // assigning the char "_" to every character in lines:   
-    char line[] = "_______";
+    char hidden_string[] = "_______";
     
     char temp;
-    printLine(line);
-    
-    for(int i = 0; i < sizeof(line)-1; i++) {
-        std::cout<<"\n\n";
-        std::cin >> temp;
-        std::cout<<"\n\n";
-        line[i] = temp;
-        printLine(line);
+    printLine(hidden_string);
+    int index_found;
+    for(int i = 0; i < sizeof(hidden_string)-1; i++) {
+        std::cin >> letter;
+        for(int j = 0; j < sizeof(main_word)-1; j++) {
+            if(letter == main_word[j]) {
+                hidden_string[j] = letter;
+            }
+        }    
+        printLine(hidden_string);
     }
-
+    return 0;
 }
-
-
 
 void printLine(char *current_line) {
 
@@ -33,3 +33,4 @@ void printLine(char *current_line) {
     }
     std::cout << "\n\n";
 }
+
