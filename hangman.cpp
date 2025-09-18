@@ -1,36 +1,44 @@
 #include <iostream>
 #include <string>
+#include <cctype>
 
 // 
-void printLine(char *current_line);
+void printLine(const std::string& current_line);
 
 int main() {
     std::string main_word;
-    main_word = "Biggest";
+    main_word = "BIGGEST";
     char letter;
     // assigning the char "_" to every character in lines:   
-    char hidden_string[] = "_______";
+    std::string hidden_string;
+    hidden_string = "_______";
     
     char temp;
     printLine(hidden_string);
     int index_found;
-    for(int i = 0; i < sizeof(hidden_string)-1; i++) {
+    bool word_completed;
+    word_completed = false;
+    while(!word_completed) {
         std::cin >> letter;
-        for(int j = 0; j < sizeof(main_word)-1; j++) {
-            if(letter == main_word[j]) {
-                hidden_string[j] = letter;
+        for(int j = 0; j < hidden_string.length(); j++) {
+            if(std::toupper(letter) == std::toupper(main_word[j])) {
+                hidden_string[j] = std::toupper(letter);
             }
+        }
+        if(hidden_string == main_word) {
+            word_completed = true;
         }    
         printLine(hidden_string);
     }
+    std::cout << "Congrats";
     return 0;
 }
 
-void printLine(char *current_line) {
 
-    for(int i = 0; i < sizeof(current_line)-1; i++) {
+void printLine(const std::string& current_line) {
+
+    for(int i = 0; i < current_line.size(); i++) {
         std::cout << current_line[i] << " | "; 
     }
     std::cout << "\n\n";
 }
-
