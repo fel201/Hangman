@@ -1,11 +1,31 @@
 #include <iostream>
 #include <string>
 #include <cctype>
-
+#include <stddef.h>
+#include "include/curl/curl.h"
+#include <string.h>
+#include <stdlib.h>
 // 
+
 void printLine(const std::string& current_line);
 
 int main() {
+    
+    CURL *curl;
+    CURLcode result;
+    curl = curl_easy_init();
+    if (curl == NULL) {
+        std::cout << "NOT GOOD!";
+        return -1;
+    }
+    result = curl_easy_perform(curl);
+    if (result != CURLE_OK) {
+        fprintf(stderr, "Request failed: %s\n", curl_easy_strerror(result));
+        return -1;
+    }
+    curl_easy_cleanup(curl);
+    std::cout << "\n";
+    std::cout << result;
     std::string main_word;
     main_word = "BIGGEST";
     char letter;
