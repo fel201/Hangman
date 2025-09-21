@@ -5,15 +5,19 @@
 #include <string.h>
 #include <stdlib.h>
 // 
-
 struct memory {
     char *buffer;
     size_t size;
 };
+
 void printLine(const std::string& current_line);
 size_t callbackFunction(char *data, size_t size, size_t nmemb, void *userdata);
+void splitString(memory &actual_data, char string[128]);
+void startGame(bool &word_completed, char &letter, char hidden_string[128], char *main_word);
+
+
 int main() {
-    
+
     CURL *curl;
     CURLcode result;
     curl = curl_easy_init();
@@ -34,18 +38,53 @@ int main() {
         fprintf(stderr, "Request failed: %s\n", curl_easy_strerror(result));
         return -1;
     }
-
+    // freeing up memory 
     curl_easy_cleanup(curl);
     free(actual_data.buffer);
-    // the game starts here
+
     std::cout << "\n";
-    char string[128] = {0};
-    for(int i = 0; i < actual_data.size; i++) {
-        if(actual_data.buffer[i] != '[' && actual_data.buffer[i] != ']'
-        && actual_data.buffer[i] != '\"') {
+    char string_response[128] = {0};
+    // split the string from \["string"]\ into "string"
+    splitString(actual_data, string_response);
+    std::cout << string_response << "\n";
+
+    char *main_word = string_response;
+    char letter;
+    // assigning the char "_" to every character 
+    char hidden_string[128] = {0};
+    for(int i = 0; i < strlen(main_word); i++) {
+        hidden_string[i] += '_';
+    }
+    printLine(hidden_string);
+    bool game_over = false;
+    // the game starts here
+    startGame(game_over, letter, hidden_string, main_word);
+    std::cout << "Congrats";
+    return 0;
+}
+
+void startGame(bool &word_completed, char &letter, char hidden_string[128], char *main_word) {
+    while (!word_completed) {
+        std::cin >> letter;
+        for (int j = 0; j < strlen(hidden_string); j++) {
+            if (tolower(letter) == tolower(main_word[j])) {
+                hidden_string[j] = tolower(letter);
+            }
+        }
+        if (strcmp(main_word, hidden_string) == 0) {
+            word_completed = true;
+        }
+        printLine(hidden_string);
+    }
+}
+// TO-DO: fix unefficient algorithm  
+void splitString(memory &actual_data, char string[128]) {
+
+    for (int i = 0; i < actual_data.size; i++) {
+        if (actual_data.buffer[i] != '[' && actual_data.buffer[i] != ']' && actual_data.buffer[i] != '\"') {
             int j = 0;
             bool space_found = false;
-            while (j<128 && !space_found) {
+            while (j < 128 && !space_found) {
                 if (string[j] == '\0') {
                     string[j] = actual_data.buffer[i];
                     space_found = true;
@@ -54,36 +93,7 @@ int main() {
             }
         }
     }
-    std::cout << string << "\n";
-    char *main_word = string;
-    char letter;
-    // assigning the char "_" to every character in lines:   
-    char hidden_string[128] = {0};
-    for(int i = 0; i < strlen(main_word); i++) {
-        hidden_string[i] += '_';
-    }
-    char temp;
-    printLine(hidden_string);
-    int index_found;
-    bool word_completed;
-    word_completed = false;
-    while(!word_completed) {
-        std::cin >> letter;
-        for(int j = 0; j < strlen(hidden_string); j++) {
-            if(tolower(letter) == tolower(main_word[j])) {
-                hidden_string[j] = tolower(letter);
-            }
-        }
-        if(strcmp(main_word, hidden_string) == 0) {
-            word_completed = true;
-        }    
-        printLine(hidden_string);
-    }
-    std::cout << "Congrats";
-    return 0;
 }
-
-
 void printLine(const std::string& current_line) {
 
     for(int i = 0; i < current_line.size(); i++) {
